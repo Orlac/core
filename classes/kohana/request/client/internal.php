@@ -82,14 +82,24 @@ class Kohana_Request_Client_Internal extends Request_Client {
 
 		try
 		{
-			if ( ! class_exists($prefix.$controller))
+			/**
+			 * use name space
+			 */ 
+			$className = str_replace('_', '', $prefix) .'\\'. str_replace('.', '\\', $controller);
+			if( class_exists($className) === true) 
 			{
-				throw new HTTP_Exception_404('The requested URL :uri was not found on this server.',
-													array(':uri' => $request->uri()));
+				// Load the controller using reflection
+				$class = new ReflectionClass($className);
 			}
-
-			// Load the controller using reflection
-			$class = new ReflectionClass($prefix.$controller);
+			elseif ( ! class_exists($prefix.$controller))
+			{
+			    throw new HTTP_Exception_404('The requested URL :uri was not found on this server. '.$prefix.$controller,
+													array(':uri' => $request->uri()));
+			}else
+			{
+				// Load the controller using reflection
+				$class = new ReflectionClass($prefix.$controller);
+			}
 
 			if ($class->isAbstract())
 			{

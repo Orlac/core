@@ -487,6 +487,9 @@ class Kohana_Core {
 	{
 		try
 		{
+			// Transform the class name into a path to use namespaces
+			$class = str_replace('\\', '/', strtolower($class));
+			
 			// Transform the class name into a path
 			$file = str_replace('_', '/', strtolower($class));
 
